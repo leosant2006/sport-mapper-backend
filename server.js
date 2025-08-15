@@ -11,7 +11,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://sport-mapper-frontend.vercel.app', 'https://*.vercel.app'],
+  origin: ['http://localhost:3000', 'https://sport-mapper-frontend.vercel.app', 'https://*.vercel.app', 'https://sport-mapper-frontend-lrd50drl0-leonardo-santoros-projects.vercel.app'],
   credentials: true
 }));
 app.use(express.json());
