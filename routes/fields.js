@@ -355,6 +355,9 @@ router.put('/:id', auth, [
 
     const field = existingField.rows[0];
 
+    console.log('🔄 PUT /api/fields/:id - Received update request');
+    console.log('📝 Request body:', req.body);
+    
     const {
       name,
       description,
@@ -391,6 +394,9 @@ router.put('/:id', auth, [
       (prices && prices.trim() !== '') ? prices : null, id
     ]);
 
+    console.log('✅ Database update successful');
+    console.log('📊 Updated field data:', result.rows[0]);
+    
     res.json({
               message: 'Impianto aggiornato con successo',
       field: result.rows[0]
@@ -602,9 +608,11 @@ router.delete('/:id', auth, async (req, res) => {
       // Delete venue reports
       await pool.query('DELETE FROM venue_reports WHERE venue_id = $1', [id]);
 
-      // Check if venue exists
+      // Check which table the venue is in
       const venueCheck = await pool.query(
-        `SELECT 'sports_venues' as table_name, added_by_user_id FROM sports_venues WHERE id = $1`,
+        `SELECT 'sports_venues' as table_name, added_by_user_id FROM sports_venues WHERE id = $1
+         UNION ALL
+         SELECT 'football_fields' as table_name, added_by_user_id FROM football_fields WHERE id = $1`,
         [id]
       );
 
@@ -621,8 +629,11 @@ router.delete('/:id', auth, async (req, res) => {
       );
     } else {
       // Regular user can only delete their own venues
+      // Check both tables
       const venueCheck = await pool.query(
-        `SELECT 'sports_venues' as table_name, added_by_user_id FROM sports_venues WHERE id = $1 AND added_by_user_id = $2`,
+        `SELECT 'sports_venues' as table_name, added_by_user_id FROM sports_venues WHERE id = $1 AND added_by_user_id = $2
+         UNION ALL
+         SELECT 'football_fields' as table_name, added_by_user_id FROM football_fields WHERE id = $1 AND added_by_user_id = $2`,
         [id, userId]
       );
 
