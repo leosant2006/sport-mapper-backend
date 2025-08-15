@@ -355,9 +355,6 @@ router.put('/:id', auth, [
 
     const field = existingField.rows[0];
 
-    console.log('🔄 PUT /api/fields/:id - Received update request');
-    console.log('📝 Request body:', req.body);
-    
     const {
       name,
       description,
@@ -394,9 +391,6 @@ router.put('/:id', auth, [
       (prices && prices.trim() !== '') ? prices : null, id
     ]);
 
-    console.log('✅ Database update successful');
-    console.log('📊 Updated field data:', result.rows[0]);
-    
     res.json({
               message: 'Impianto aggiornato con successo',
       field: result.rows[0]
