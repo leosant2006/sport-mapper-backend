@@ -22,6 +22,7 @@ app.use('/uploads', express.static('uploads'));
 const authRoutes = require('./routes/auth');
 const fieldRoutes = require('./routes/fields');
 const userRoutes = require('./routes/users');
+const geocodingRoutes = require('./routes/geocoding');
 
 // Health check route
 app.get('/', (req, res) => {
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/fields', fieldRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/geocoding', geocodingRoutes);
 
 // Serve React app
 app.get('*', (req, res) => {
