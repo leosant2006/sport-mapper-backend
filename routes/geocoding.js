@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require("axios");
 const router = express.Router();
 
 // Reverse geocoding endpoint
@@ -11,10 +12,9 @@ router.get("/reverse", async (req, res) => {
     }
 
     // Use Nominatim API with proper headers
-    const response = await fetch(
+    const response = await axios.get(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&accept-language=it`,
       {
-        method: "GET",
         headers: {
           "Accept": "application/json",
           "User-Agent": "CalcioMapper/1.0 (https://calcio-mapper.vercel.app)"
@@ -22,11 +22,7 @@ router.get("/reverse", async (req, res) => {
       }
     );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = response.data;
     
     if (data && data.address) {
       const address = data.address;
