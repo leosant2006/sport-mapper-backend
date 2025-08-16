@@ -221,7 +221,7 @@ router.get('/', async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching fields:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -257,7 +257,7 @@ router.get('/:id', async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching field:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -320,7 +320,7 @@ router.post('/', auth, [
 
   } catch (error) {
     console.error('Error adding field:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -398,7 +398,7 @@ router.put('/:id', auth, [
 
   } catch (error) {
     console.error('Error updating field:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -457,7 +457,7 @@ router.post('/:id/image', auth, (req, res, next) => {
 
   } catch (error) {
     console.error('Error uploading image:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -524,7 +524,7 @@ router.delete('/:id/image/:imageId', auth, async (req, res) => {
 
   } catch (error) {
     console.error('Error deleting image:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -562,7 +562,7 @@ router.put('/:id/image/:imageId/primary', auth, async (req, res) => {
 
   } catch (error) {
     console.error('Error setting primary image:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -642,7 +642,7 @@ router.delete('/:id', auth, async (req, res) => {
 
   } catch (error) {
     console.error('Error deleting field:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -718,7 +718,7 @@ router.post('/:id/report', auth, [
 
   } catch (error) {
     console.error('Error creating report:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -762,7 +762,7 @@ router.get('/:id/reports', auth, async (req, res) => {
 
   } catch (error) {
     console.error('Error getting reports:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -781,7 +781,7 @@ router.get('/reports/all', auth, adminAuth, async (req, res) => {
 
   } catch (error) {
     console.error('Error getting all reports:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
@@ -796,7 +796,7 @@ router.post('/delete-all-fields', async (req, res) => {
     res.json({ message: 'All fields deleted successfully' });
   } catch (error) {
     console.error('Error deleting fields:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Errore del server' });
   }
 });
 
