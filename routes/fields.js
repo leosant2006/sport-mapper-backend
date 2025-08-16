@@ -587,40 +587,63 @@ router.delete('/:id', auth, async (req, res) => {
       // Admin can delete any venue - delete related data first
       console.log('Admin deleting venue:', id);
       
-      // Delete all images first
-      const imagesResult = await pool.query('SELECT image_url FROM field_images WHERE field_id = $1', [id]);
-      for (const image of imagesResult.rows) {
-        const imagePath = path.join(__dirname, '..', image.image_url);
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath);
+      try {
+        // Delete all images first
+        const imagesResult = await pool.query('SELECT image_url FROM field_images WHERE field_id = $1', [id]);
+        console.log('Found images to delete:', imagesResult.rows.length);
+        
+        for (const image of imagesResult.rows) {
+          try {
+            const imagePath = path.join(__dirname, '..', image.image_url);
+            console.log('Attempting to delete image:', imagePath);
+            if (fs.existsSync(imagePath)) {
+              fs.unlinkSync(imagePath);
+              console.log('Image deleted successfully:', imagePath);
+            } else {
+              console.log('Image file not found:', imagePath);
+            }
+          } catch (imageError) {
+            console.error('Error deleting image file:', imageError);
+            // Continue with deletion even if image file deletion fails
+          }
         }
+
+        // Delete field images from database
+        await pool.query('DELETE FROM field_images WHERE field_id = $1', [id]);
+        console.log('Images deleted from database');
+
+        // Delete venue reports
+        await pool.query('DELETE FROM venue_reports WHERE venue_id = $1', [id]);
+        console.log('Reports deleted from database');
+
+        // Check which table the venue is in
+        const venueCheck = await pool.query(
+          `SELECT 'sports_venues' as table_name, added_by_user_id FROM sports_venues WHERE id = $1
+           UNION ALL
+           SELECT 'football_fields' as table_name, added_by_user_id FROM football_fields WHERE id = $1`,
+          [id]
+        );
+
+        console.log('Venue check result:', venueCheck.rows);
+
+        if (venueCheck.rows.length === 0) {
+          return res.status(404).json({ message: 'Venue not found' });
+        }
+
+        const tableName = venueCheck.rows[0].table_name;
+        console.log('Deleting from table:', tableName);
+
+        // Delete the venue from the correct table
+        result = await pool.query(
+          `DELETE FROM ${tableName} WHERE id = $1 RETURNING *`,
+          [id]
+        );
+        
+        console.log('Venue deleted successfully:', result.rows[0]);
+      } catch (deleteError) {
+        console.error('Error during deletion process:', deleteError);
+        throw deleteError;
       }
-
-      // Delete field images from database
-      await pool.query('DELETE FROM field_images WHERE field_id = $1', [id]);
-
-      // Delete venue reports
-      await pool.query('DELETE FROM venue_reports WHERE venue_id = $1', [id]);
-
-      // Check which table the venue is in
-      const venueCheck = await pool.query(
-        `SELECT 'sports_venues' as table_name, added_by_user_id FROM sports_venues WHERE id = $1
-         UNION ALL
-         SELECT 'football_fields' as table_name, added_by_user_id FROM football_fields WHERE id = $1`,
-        [id]
-      );
-
-      if (venueCheck.rows.length === 0) {
-        return res.status(404).json({ message: 'Venue not found' });
-      }
-
-      const tableName = venueCheck.rows[0].table_name;
-
-      // Delete the venue from the correct table
-      result = await pool.query(
-        `DELETE FROM ${tableName} WHERE id = $1 RETURNING *`,
-        [id]
-      );
     } else {
       // Regular user can only delete their own venues
       // Check both tables
