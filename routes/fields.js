@@ -616,26 +616,9 @@ router.delete('/:id', auth, async (req, res) => {
         await pool.query('DELETE FROM venue_reports WHERE venue_id = $1', [id]);
         console.log('Reports deleted from database');
 
-        // Check which table the venue is in
-        const venueCheck = await pool.query(
-          `SELECT 'sports_venues' as table_name, added_by_user_id FROM sports_venues WHERE id = $1
-           UNION ALL
-           SELECT 'football_fields' as table_name, added_by_user_id FROM football_fields WHERE id = $1`,
-          [id]
-        );
-
-        console.log('Venue check result:', venueCheck.rows);
-
-        if (venueCheck.rows.length === 0) {
-          return res.status(404).json({ message: 'Venue not found' });
-        }
-
-        const tableName = venueCheck.rows[0].table_name;
-        console.log('Deleting from table:', tableName);
-
-        // Delete the venue from the correct table
+        // Delete from sports_venues table
         result = await pool.query(
-          `DELETE FROM ${tableName} WHERE id = $1 RETURNING *`,
+          `DELETE FROM sports_venues WHERE id = $1 RETURNING *`,
           [id]
         );
         
@@ -646,11 +629,9 @@ router.delete('/:id', auth, async (req, res) => {
       }
     } else {
       // Regular user can only delete their own venues
-      // Check both tables
+      // Check if venue exists and user owns it
       const venueCheck = await pool.query(
-        `SELECT 'sports_venues' as table_name, added_by_user_id FROM sports_venues WHERE id = $1 AND added_by_user_id = $2
-         UNION ALL
-         SELECT 'football_fields' as table_name, added_by_user_id FROM football_fields WHERE id = $1 AND added_by_user_id = $2`,
+        `SELECT added_by_user_id FROM sports_venues WHERE id = $1 AND added_by_user_id = $2`,
         [id, userId]
       );
 
@@ -658,9 +639,8 @@ router.delete('/:id', auth, async (req, res) => {
         return res.status(404).json({ message: 'Venue not found or access denied' });
       }
 
-      const tableName = venueCheck.rows[0].table_name;
       result = await pool.query(
-        `DELETE FROM ${tableName} WHERE id = $1 AND added_by_user_id = $2 RETURNING *`,
+        `DELETE FROM sports_venues WHERE id = $1 AND added_by_user_id = $2 RETURNING *`,
         [id, userId]
       );
     }
