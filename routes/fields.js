@@ -314,7 +314,7 @@ router.post('/', auth, [
     ]);
 
     res.status(201).json({
-      message: 'Venue added successfully',
+      message: 'Impianto aggiunto con successo',
       field: result.rows[0]
     });
 
@@ -638,7 +638,7 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Venue not found or access denied' });
     }
 
-    res.json({ message: isAdmin ? 'Impianto eliminato con successo (Admin)' : 'Field deleted successfully' });
+    res.json({ message: isAdmin ? 'Impianto eliminato con successo (Admin)' : 'Impianto eliminato con successo' });
 
   } catch (error) {
     console.error('Error deleting field:', error);
